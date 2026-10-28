@@ -26,6 +26,6 @@
 
 ## Staging
 
-The lab mounts this repository at /src, and optionally an application at /app. It copies .HC, .HH and .DD files under src/ and tests/ to corresponding B:/ paths. Duplicate guest paths are errors. The supplied entry path is relative to its repository and runs after all files are delivered.
+The lab mounts this repository at /src, and optionally an application at /app. It copies .HC, .HH and .DD files under src/, tests/ and examples/ to corresponding B:/ paths. Duplicate guest paths are errors. The supplied entry path is relative to its repository and runs after all files are delivered.
 
 No application source is vendored into this repository. The mock service uses an Apify-shaped JSON fixture for HTTP/TLS and transport tests; the production API client lives separately.

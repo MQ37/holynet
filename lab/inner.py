@@ -129,7 +129,7 @@ def files():
     for source in filter(None, (a.src, a.app)):
         for root, dirs, names in os.walk(source):
             if root == source:
-                dirs[:] = [d for d in dirs if d in ("src", "tests")]
+                dirs[:] = [d for d in dirs if d in ("src", "tests", "examples")]
             for f in sorted(names):
                 if f.endswith((".HC", ".HH", ".DD")):
                     p = os.path.join(root, f)

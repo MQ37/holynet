@@ -2,7 +2,7 @@
 """Tiny fake of the Apify API over TLS 1.3, for debugging the HolyC TLS/HTTP/client code offline.
 Runs inside the lab container (127.0.0.1:8443). Writes TLS secrets to /out/keys.log so the
 captured net.pcap can be decrypted with: tshark -r net.pcap -o tls.keylog_file:keys.log -V"""
-import json, ssl, subprocess, sys, os
+import json, ssl, subprocess, sys, os, time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 TOKEN = os.environ.get("MOCK_TOKEN", "test-token")
@@ -44,6 +44,8 @@ class H(BaseHTTPRequestHandler):
         if "/run-sync-get-dataset-items" in self.path:
             if not self._auth():
                 return
+            if self.path.startswith("/v2/acts/test~delayed-run/"):
+                time.sleep(0.5)
             sys.stderr.write("mock: run input = %s\n" % body.decode())
             self._send(201, [{"url": "https://example.com", "title": "Example Domain", "text": "mock result"},
                              {"url": "https://example.org", "title": "Example Org", "text": "second ✓"}], chunked=True)

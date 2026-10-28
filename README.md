@@ -20,7 +20,7 @@ TempleOS has no built-in networking. HolyNet gives it a PCnet driver, a TCP/IP s
 
 > Networking heresy. God intended TempleOS to stay offline. We added TCP/IP anyway.
 
-HolyNet is the foundation. **HolyApify**, in the sibling `holyapify` repository, uses it to run Apify Actors from the TempleOS terminal.
+HolyNet is the foundation. [**HolyApify**](https://github.com/MQ37/holyapify), in the sibling `holyapify` repository, uses it to run Apify Actors from the TempleOS terminal.
 
 **Experimental, unauthenticated TLS.** Server certificates and CertificateVerify signatures are not validated. The random generator is experimental. Record tags and Finished are checked, but the client cannot establish the server's identity. Use disposable credentials and non-sensitive data only. [Security model →](SECURITY.md)
 
@@ -43,9 +43,11 @@ The network stack is adapted from Shrine. [The patch notes](src/Net/PATCHES.md) 
 
 You need Linux, rootless Podman and access to `/dev/kvm`. QEMU, TempleOS, the compiler and all test code execute inside the container. No host packages are installed.
 
-From this repository's root:
+Clone the library, then build the lab image:
 
 ```sh
+git clone https://github.com/MQ37/holynet.git
+cd holynet
 podman build -t localhost/tos-lab:1 -f lab/Containerfile .
 ```
 
@@ -137,7 +139,7 @@ holynet/                 holyapify/
   lab/                    lab/tos  → invokes the HolyNet lab
 ```
 
-`TOS_APP_DIR` adds an application's `src/` and `tests/` trees to the guest. Both source trees are mounted read-only and staged onto the same RAM drive. Duplicate guest paths are refused. The app's entry file runs after staging; the shared tests and helpers stay available.
+`TOS_APP_DIR` adds an application's `src/`, `tests/` and `examples/` trees to the guest. Both source trees are mounted read-only and staged onto the same RAM drive. Duplicate guest paths are refused. The app's entry file runs after staging; the shared tests and helpers stay available. Follow [HolyApify's quick start](https://github.com/MQ37/holyapify#quick-start-no-account-needed) for a runnable client example.
 
 ## Limits of divine intervention
 
