@@ -1,0 +1,7 @@
+FROM docker.io/library/debian:trixie-slim
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      qemu-system-x86 qemu-utils xorriso openssl curl ca-certificates python3 tshark socat \
+    && rm -rf /var/lib/apt/lists/*
+RUN useradd -m -u 1000 lab
+USER lab
+WORKDIR /work

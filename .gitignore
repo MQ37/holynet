@@ -1,0 +1,10 @@
+*.png
+!assets/*.png
+*.pcap
+keys.log
+*.ISO
+*.iso
+*.qcow2
+*.pyc
+__pycache__/
+out/

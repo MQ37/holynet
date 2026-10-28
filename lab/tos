@@ -1,0 +1,26 @@
+#!/bin/sh
+# tos [options] ENTRY.HC   -- run a HolyC entry file (path relative to ../src's parent: src/..., tests/...) in a throwaway TempleOS VM
+# Everything runs inside the rootless podman image; the host only sees the printed serial output and out/*.png.
+# Options: --timeout S  --net none|apify|mock|mockplain|open  --shot name.png
+# Secrets: pass env vars named TOS_SECRET_<NAME> (they appear in the guest as the HolyC global <NAME>).
+set -e
+HERE=$(cd "$(dirname "$0")" && pwd); ROOT=$(dirname "$HERE")
+ISO=${TOS_ISO:-/dev/shm/templeos-net/TempleOS.ISO}
+OUT=${TOS_OUT:-/dev/shm/templeos-net/out}; mkdir -p "$OUT"
+[ -f "$ISO" ] || { echo "missing $ISO (see README: download + sha256 check)"; exit 64; }
+set -- "$@"
+if [ -n "${TOS_APP_DIR:-}" ]; then
+  [ -d "$TOS_APP_DIR/src" ] || { echo "TOS_APP_DIR must contain src/" >&2; exit 64; }
+  set -- --app /app "$@"
+fi
+SECRETS=""; for v in $(env | grep -o '^TOS_SECRET_[A-Za-z0-9_]*'); do SECRETS="$SECRETS -e $v"; done
+# Mount the optional application separately; both trees are staged into the guest RAM drive.
+if [ -n "${TOS_APP_DIR:-}" ]; then
+  set -- -v "$TOS_APP_DIR:/app:ro" localhost/tos-lab:1 python3 /lab/inner.py --src /src "$@"
+else
+  set -- localhost/tos-lab:1 python3 /lab/inner.py --src /src "$@"
+fi
+exec podman run --rm --userns=keep-id --group-add keep-groups --device /dev/kvm \
+  --read-only --cap-drop=ALL --security-opt no-new-privileges --tmpfs /tmp:rw,size=256m \
+  -v "$ROOT":/src:ro -v "$HERE":/lab:ro -v "$ISO":/iso/TempleOS.ISO:ro -v "$OUT":/out:rw \
+  $SECRETS "$@"

@@ -1,0 +1,17 @@
+#!/bin/bash
+# Runs every test in its network mode, 4 VMs at a time. Exit 0 only if all pass. Real-internet tests use --net apify/open.
+cd "$(dirname "$0")/.." || exit 1
+LIST="none:tests/Hello.HC none:tests/CryptoHash.HC none:tests/CryptoChaPoly.HC none:tests/CryptoX25519.HC
+none:tests/HttpUnit.HC none:tests/JsonUnit.HC none:tests/TlsUnit.HC none:tests/TlsHandshake.HC
+mockplain:tests/NetUp.HC mockplain:tests/ConnTcp.HC mock:tests/TlsMock.HC
+apify:tests/ConnTcpApify.HC apify:tests/TlsApify.HC open:tests/ConnTcpOpen.HC"
+R=${TOS_OUT:-/dev/shm/templeos-net}/test-all; mkdir -p "$R"; rm -f "$R"/*.log "$R"/*.failed
+run() { n=${1%%:*}; t=${1#*:}; b=$(basename "$t" .HC)
+  if TOS_OUT="$R/$b" lab/tos --net "$n" --timeout 180 "$t" > "$R/$b.log" 2>&1; then echo "PASS $t"; else touch "$R/$b.failed"; echo "FAIL $t (see $R/$b.log)"; fi; }
+for e in $LIST; do
+  run "$e" &
+  while [ "$(jobs -r | wc -l)" -ge 4 ]; do sleep 1; done
+done
+wait
+failures=("$R"/*.failed)
+[ ! -e "${failures[0]}" ]
