@@ -139,7 +139,7 @@ holynet/                 holyapify/
   lab/                    lab/tos  → invokes the HolyNet lab
 ```
 
-`TOS_APP_DIR` adds an application's `src/`, `tests/` and `examples/` trees to the guest. Both source trees are mounted read-only and staged onto the same RAM drive. Duplicate guest paths are refused. The app's entry file runs after staging; the shared tests and helpers stay available. Follow [HolyApify's quick start](https://github.com/MQ37/holyapify#quick-start-no-account-needed) for a runnable client example.
+`TOS_APP_DIR` adds an application's `src/`, `tests/` and `examples/` trees to the guest. Both source trees are mounted read-only and staged onto the same RAM drive. Duplicate guest paths are refused. The app's entry file runs after staging; the shared tests and helpers stay available. Follow [HolyApify's quick start](https://github.com/MQ37/holyapify#quick-start) for a runnable client example.
 
 ## Limits of divine intervention
 
